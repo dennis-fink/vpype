@@ -7,7 +7,6 @@ from vpype import (
     Document,
     LayerType,
     LengthType,
-    LineCollection,
     PageSizeType,
     global_processor,
     read_multilayer_svg,
@@ -17,7 +16,7 @@ from vpype import (
 
 from .cli import cli
 
-__all__ = ("read",)
+__all__ = ()
 
 
 @cli.command(group="Input")
