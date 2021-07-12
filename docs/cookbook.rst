@@ -125,6 +125,35 @@ removed thanks to the :ref:`cmd_filter` command::
   $ vpype read input.svg filter --min-length 0.5mm write output.svg
 
 
+Creating a custom pen configuration
+===================================
+
+Pen configurations associate names, colors, and/or pen widths to specific layers and are applied by the :ref:`cmd_pens` command. For example, the included ``cmyk`` pen configuration sets the name and color or layers 1 to 4 to cyan, magenta, yellow, resp. black, while leaving pen widths unchanged. New pen configurations can be defined in a custom config file, e.g. ``~/.vpype.toml``.
+
+Pen configurations must conform to the following format to be valid:
+
+  .. code-block:: toml
+
+    [pen_config.my_pen_config]  # my_pen_config is this pen configuration's name
+    layers = [
+        # for each layer, a layer_id must be provided, but name, color and
+        # pen_width are optional
+        { layer_id = 1, name = "black layer", color = "black", pen_width = "0.15mm" },
+
+        # any valid CSS color string and length unit may be used
+        { layer_id = 2, name = "red layer", color = "#e00", pen_width = "0.05in" },
+
+        # any attribute may be omitted, except layer_id
+        { layer_id = 4, color = "#00de00" },
+
+        # etc. (a pen configuration may have an arbitrary number of layers defined)
+    ]
+
+The above pen configuration can be used by referring to its name, in this case ``my_pen_config``::
+
+  $ vpype [...] pens my_pen_config [...]
+
+
 Converting a SVG to HPGL
 ========================
 

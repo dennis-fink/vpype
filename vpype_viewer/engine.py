@@ -58,7 +58,7 @@ class Engine:
         show_pen_up: bool = False,
         show_points: bool = False,
         show_rulers: bool = True,
-        pen_width: float = DEFAULT_PEN_WIDTH,
+        default_pen_width: float = DEFAULT_PEN_WIDTH,
         pen_opacity: float = DEFAULT_PEN_OPACITY,
         render_cb: Callable[[], None] = lambda: None,
     ):
@@ -80,7 +80,7 @@ class Engine:
         self._show_pen_up = show_pen_up
         self._show_points = show_points
         self._show_rulers = show_rulers
-        self._pen_width = pen_width
+        self._default_pen_width = default_pen_width
         self._pen_opacity = pen_opacity
         self._render_cb = render_cb
         self._unit_type = UnitType.METRIC
@@ -228,11 +228,11 @@ class Engine:
     @property
     def pen_width(self) -> float:
         """Pen width used for rendering (preview only)."""
-        return self._pen_width
+        return self._default_pen_width
 
     @pen_width.setter
     def pen_width(self, pen_width: float):
-        self._pen_width = pen_width
+        self._default_pen_width = pen_width
         self._update()
 
     @property
@@ -426,8 +426,11 @@ class Engine:
         if self._document is not None:
             color_index = 0
             for layer_id in sorted(self._document.layers):
-                layer_color: ColorType = _COLORS[color_index % len(_COLORS)]
                 lc = self._document.layers[layer_id]
+                layer_color: ColorType = _COLORS[color_index % len(_COLORS)]
+                if "vp:color" in lc.metadata:
+                    color = lc.metadata["vp:color"]
+                    layer_color = color.red, color.green, color.blue, color.alpha
 
                 if self.view_mode == ViewMode.OUTLINE:
                     self._layer_painters[layer_id].append(
@@ -440,11 +443,12 @@ class Engine:
                         )
                     )
                 elif self.view_mode == ViewMode.PREVIEW:
+                    pen_width = lc.metadata.get("vp:pen_width", self._default_pen_width)
                     self._layer_painters[layer_id].append(
                         LineCollectionPreviewPainter(
                             self._ctx,
                             lc=lc,
-                            pen_width=self._pen_width,
+                            pen_width=pen_width,
                             color=(
                                 layer_color[0],
                                 layer_color[1],

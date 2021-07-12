@@ -7,7 +7,7 @@ import vpype as vp
 
 from .cli import cli
 
-__all__ = ()
+__all__ = ("lcopy", "lmove", "ldelete", "lswap", "lreverse")
 
 
 @cli.command(group="Layers")
