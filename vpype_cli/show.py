@@ -1,6 +1,4 @@
 import logging
-from types import ModuleType
-from typing import Optional
 
 import click
 import numpy as np

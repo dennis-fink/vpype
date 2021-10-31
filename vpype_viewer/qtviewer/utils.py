@@ -4,10 +4,9 @@ import socket
 from contextlib import contextmanager
 from typing import Callable
 
-from PySide2 import QtNetwork
-from PySide2.QtCore import QCoreApplication
-from PySide2.QtGui import QIcon, QPalette
-from PySide2.QtWidgets import QAction, QActionGroup
+from PySide6 import QtNetwork
+from PySide6.QtCore import QCoreApplication
+from PySide6.QtGui import QAction, QActionGroup, QIcon, QPalette
 
 
 def load_icon(path: str) -> QIcon:
@@ -81,10 +80,10 @@ class PenOpacityActionGroup(QActionGroup):
 
 
 class SignalWatchdog(QtNetwork.QAbstractSocket):
-    """This object notify PySide2's event loop of an incoming signal and makes it process it.
+    """This object notify PySide6's event loop of an incoming signal and makes it process it.
 
     The python interpreter flags incoming signals and triggers the handler only upon the next
-    bytecode is processed. Since PySide2's C++ event loop function never/rarely returns when
+    bytecode is processed. Since PySide6's C++ event loop function never/rarely returns when
     the UX is in the background, the Python interpreter doesn't have a chance to run and call
     the handler.
 

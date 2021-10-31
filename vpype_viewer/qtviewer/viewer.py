@@ -9,12 +9,10 @@ import sys
 from typing import Optional, Union
 
 import moderngl as mgl
-from PySide2.QtCore import QEvent, QSettings, QSize, Qt, Signal
-from PySide2.QtGui import QScreen, QWheelEvent
-from PySide2.QtOpenGL import QGLFormat, QGLWidget
-from PySide2.QtWidgets import (
-    QAction,
-    QActionGroup,
+from PySide6.QtCore import QEvent, QSettings, QSize, Qt, Signal
+from PySide6.QtGui import QAction, QActionGroup, QScreen, QSurfaceFormat, QWheelEvent
+from PySide6.QtOpenGLWidgets import QOpenGLWidget
+from PySide6.QtWidgets import (
     QApplication,
     QHBoxLayout,
     QLabel,
@@ -47,8 +45,15 @@ def _configure_ui_scaling():
 
 _configure_ui_scaling()
 
+# set default format
+default_format = QSurfaceFormat()
+default_format.setVersion(3, 2)
+default_format.setProfile(QSurfaceFormat.CoreProfile)
+default_format.setSamples(4)
+QSurfaceFormat.setDefaultFormat(default_format)
 
-class QtViewerWidget(QGLWidget):
+
+class QtViewerWidget(QOpenGLWidget):
     """QGLWidget wrapper around :class:`Engine` to display a :class:`vpype.Document` in
     Qt GUI."""
 
@@ -60,11 +65,8 @@ class QtViewerWidget(QGLWidget):
             document: the document to display
             parent: QWidget parent
         """
-        fmt = QGLFormat()
-        fmt.setVersion(3, 3)
-        fmt.setProfile(QGLFormat.CoreProfile)
-        fmt.setSampleBuffers(True)
-        super().__init__(fmt, parent=parent)
+
+        super().__init__(parent=parent)
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
@@ -84,7 +86,7 @@ class QtViewerWidget(QGLWidget):
             view_mode=ViewMode.OUTLINE, show_pen_up=False, render_cb=self.update
         )
 
-        self.windowHandle().screenChanged.connect(self.on_screen_changed)
+        # self.winId().screenChanged.connect(self.on_screen_changed)
 
         # print diagnostic information
         screen = self.screen()
@@ -354,7 +356,7 @@ class QtViewer(QWidget):
 
         # MOUSE COORDINATES>
         self._mouse_coord_lbl = QLabel("")
-        self._mouse_coord_lbl.setMargin(6)
+        self._mouse_coord_lbl.setContentsMargins(6, 6, 6, 6)
         self._mouse_coord_lbl.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
         self._mouse_coord_lbl.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self._toolbar.addWidget(self._mouse_coord_lbl)
@@ -364,7 +366,7 @@ class QtViewer(QWidget):
         # setup horizontal layout for optional side widgets
         self._hlayout = QHBoxLayout()
         self._hlayout.setSpacing(0)
-        self._hlayout.setMargin(0)
+        self._hlayout.setContentsMargins(0, 0, 0, 0)
         self._hlayout.addWidget(self._viewer_widget)
         widget = QWidget()
         widget.setLayout(self._hlayout)
@@ -372,7 +374,7 @@ class QtViewer(QWidget):
         # setup global vertical layout
         layout = QVBoxLayout()
         layout.setSpacing(0)
-        layout.setMargin(0)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._toolbar)
         layout.addWidget(widget)
         self.setLayout(layout)
